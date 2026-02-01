@@ -3,6 +3,8 @@ let num2 = null;
 let operator = null;
 let result = null;
 
+
+
 function setNum1(value) {
     num1 = parseFloat(value);
 }
@@ -42,4 +44,6 @@ function calculate() {
 
     return result;
 }
+
+
 }
