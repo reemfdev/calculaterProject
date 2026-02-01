@@ -1,47 +1,83 @@
-let num1 = document.getElementById(".myNumber").select();
-let num2 = document.getElementById(".myNumber").select();
+
+let num1 = null;
+let num2 = null;
 let operator = null;
 let result = null;
+const calcBtn = document.querySelectorAll('.btn');
+const outputNum = document.getElementById('outputNum');
 
-
-
-// function setNum1(value) {
-//     num1 = parseFloat(value);
-// }
-
-// function setNum2(value) {
-//     num2 = parseFloat(value);
-// }
-
-function setOperator(op) {
-    operator = op;
+const displayValue = () => {
+  if (num1 !== null && operator !== null) {
+    outputNum.innerHTML = <p id="outputNum">${num1} ${operator} ${num2 !== null}</p>
+  }
 }
-while (true) {
-    function calculate() {
-        if (num1 === null || num2 === null || operator === null) {
-            throw new Error("Incomplete input");
-        }
 
-        switch (operator) {
-            case '+':
-                result = num1 + num2;
-                break;
-            case '-':
-                result = num1 - num2;
-                break;
-            case '*':
-                result = num1 * num2;
-                break;
-            case '/':
-                if (num2 === 0) {
-                    throw new Error("Division by zero");
-                }
-                result = num1 / num2;
-                break;
-            default:
-                throw new Error("Invalid operator");
-        }
 
-    return result;
+
+
+
+const calcul = (num1, num2, operator) => {
+  let result;
+
+  switch (num1, num2, operator) {
+    case '+':
+      result = num1 + num2
+      break;
+    case '-':
+      result = num1 - num2
+      break;
+    case '*':
+      result = num1 * num2
+      break;
+    case '/':
+      result = num1 / num2
+      break;
+    case '%':
+      result = num1 % num2
+      break;
+  }
+  return result;
 }
+
+const calculBtn = (e) => {
+
+  const btn = e.target.textContent;
+
+  if (btn >= '0' && btn <= '9') {
+    if (num1 === null) {
+      num1 = parseInt(btn);
+    } else if (operator === null) {
+      num1 * 10 + parseInt(btn);
+    }
+    if (num2 === null) {
+      num2 = parseInt(btn);
+    } else if (result === null) {
+      num2 * 10 + parseInt(btn);
+
+      displayValue();
+
+    } else if (operator === 'C') {
+      num1 = null;
+      num2 = null;
+      operator = null;
+      outputNum.innerHTML = '';
+
+    } else if (btn === '=') {
+      const result = calcul(num1, num2, operator);
+      outputNum.innerHTML = result;
+
+      num1 = result;
+      num2 = null;
+      operator = null;
+
+    } else {
+      operator = btn;
+      displayValue();
+    }
+  }
+
 }
+
+calcBtn.forEach(btn => {
+  btn.addEventListener('click', calculBtn)
+});
