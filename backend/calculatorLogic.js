@@ -1,83 +1,110 @@
+const display = document.getElementById("display");
+const buttons = document.querySelectorAll(".btn");
 
-let num1 = null;
-let num2 = null;
+let current = "";
+let previous = "";
 let operator = null;
-let result = null;
-const calcBtn = document.querySelectorAll('.btn');
-const outputNum = document.getElementById('outputNum');
 
-const displayValue = () => {
-  if (num1 !== null && operator !== null) {
-    outputNum.innerHTML = <p id="outputNum">${num1} ${operator} ${num2 !== null}</p>
+const updateDisplay = () => {
+  display.textContent = current || "0";
+};
+
+const calculate = () => {
+  const a = parseFloat(previous);
+  const b = parseFloat(current);
+
+  switch (operator) {
+    case "+":
+      return a + b;
+    case "−":
+      return a - b;
+    case "×":
+      return a * b;
+    case "÷":
+      return b === 0 ? "خطأ" : a / b;
+    case "%":
+      return a % b;
+    default:
+      return b;
   }
-}
+};
 
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    const value = button.textContent;
 
-
-
-
-const calcul = (num1, num2, operator) => {
-  let result;
-
-  switch (num1, num2, operator) {
-    case '+':
-      result = num1 + num2
-      break;
-    case '-':
-      result = num1 - num2
-      break;
-    case '*':
-      result = num1 * num2
-      break;
-    case '/':
-      result = num1 / num2
-      break;
-    case '%':
-      result = num1 % num2
-      break;
-  }
-  return result;
-}
-
-const calculBtn = (e) => {
-
-  const btn = e.target.textContent;
-
-  if (btn >= '0' && btn <= '9') {
-    if (num1 === null) {
-      num1 = parseInt(btn);
-    } else if (operator === null) {
-      num1 * 10 + parseInt(btn);
+    if (button.dataset.number !== undefined) {
+      if (value === "." && current.includes(".")) return;
+      current += value;
+      updateDisplay();
+      return;
     }
-    if (num2 === null) {
-      num2 = parseInt(btn);
-    } else if (result === null) {
-      num2 * 10 + parseInt(btn);
 
-      displayValue();
-
-    } else if (operator === 'C') {
-      num1 = null;
-      num2 = null;
-      operator = null;
-      outputNum.innerHTML = '';
-
-    } else if (btn === '=') {
-      const result = calcul(num1, num2, operator);
-      outputNum.innerHTML = result;
-
-      num1 = result;
-      num2 = null;
-      operator = null;
-
-    } else {
-      operator = btn;
-      displayValue();
+    if (button.dataset.action === "operator") {
+      if (!current) return;
+      if (previous) {
+        current = calculate().toString();
+        updateDisplay();
+      }
+      operator = value;
+      previous = current;
+      current = "";
+      return;
     }
+
+    if (button.dataset.action === "equal") {
+      if (!previous || !current) return;
+      current = calculate().toString();
+      previous = "";
+      operator = null;
+      updateDisplay();
+      return;
+    }
+
+    if (button.dataset.action === "clear") {
+      current = "";
+      previous = "";
+      operator = null;
+      updateDisplay();
+      return;
+    }
+
+    if (button.dataset.action === "delete") {
+      current = current.slice(0, -1);
+      updateDisplay();
+    }
+  });
+});
+
+/* دعم الكيبورد */
+document.addEventListener("keydown", e => {
+  if (!isNaN(e.key) || e.key === ".") {
+    current += e.key;
+    updateDisplay();
   }
 
-}
+  if (["+", "-", "*", "/", "%"].includes(e.key)) {
+    operator = e.key === "*" ? "×" : e.key === "/" ? "÷" : e.key;
+    previous = current;
+    current = "";
+  }
 
-calcBtn.forEach(btn => {
-  btn.addEventListener('click', calculBtn)
+  if (e.key === "Enter") {
+    current = calculate().toString();
+    previous = "";
+    operator = null;
+    updateDisplay();
+  }
+
+  if (e.key === "Backspace") {
+    current = current.slice(0, -1);
+    updateDisplay();
+  }
+
+  if (e.key === "Escape") {
+    current = "";
+    previous = "";
+    operator = null;
+    updateDisplay();
+  }
 });
